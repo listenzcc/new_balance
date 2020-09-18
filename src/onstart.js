@@ -4,6 +4,29 @@
 // Welcome message
 console.log("Welcome to the balance sheet.");
 
+// The onclick method for thead,
+// used for toggle its tbody.
+function thead_onclick(thead) {
+  // Get parent table dom
+  let table = thead.parentElement;
+
+  // Get the first th dom
+  let th = thead.getElementsByTagName("th")[0];
+
+  // Perform toggling if it is toggle-able
+  if (th.innerText[0] == "(" && th.innerText[2] == ")") {
+    // Get tbody, toggle it and switch the note
+    let tbody = table.getElementsByTagName("tbody")[0];
+    if (toggle_visibility(tbody) == 1) {
+      // tbody is visible
+      th.innerText = th.innerText.replace("(+)", "(-)");
+    } else {
+      // tbody is hidden
+      th.innerText = th.innerText.replace("(-)", "(+)");
+    }
+  }
+}
+
 // Parse data into D3 useable structure
 function parse_data(data) {
   // Load data
@@ -46,6 +69,15 @@ function parse_data(data) {
 // Fill #contents div
 d3.json("latest.json").then(function (data) {
   console.log(data);
+  // Parse data
+  //  subject 1
+  //    |-- object 1
+  //    |-- object 2
+  //    `-- ...
+  //  subject 2
+  //    |-- object 1
+  //    `-- object 2
+  //  ...
   var parsed = parse_data(data);
   var subject_idx = parsed[0];
   var subject_list = parsed[1];
@@ -54,32 +86,42 @@ d3.json("latest.json").then(function (data) {
   console.log(subject_list);
   console.log(object_list);
 
-  let table = d3
+  // Create a table for each subject
+  // in #contents div
+  let tables = d3
     .select("#contents")
     .selectAll("table")
     .data(subject_idx)
     .enter()
     .append("table");
 
-  table
+  // Add thead for each table
+  // subject_list is used
+  tables
     .data(subject_list)
     .append("thead")
+    // Attach onclick method
+    .attr("onclick", "thead_onclick(this)")
     .append("tr")
+    // Add two columns
     .selectAll("th")
     .data((d) => {
-      return [d.subject, d.price];
+      return ["(-)" + d.subject, d.price];
     })
     .enter()
     .append("th")
     .text((d) => d);
 
-  table
+  // Add tbody for each table
+  // object_list is used
+  tables
     .data(object_list)
     .append("tbody")
     .selectAll("tr")
     .data((d) => d)
     .enter()
     .append("tr")
+    // Add two columns
     .selectAll("td")
     .data((d) => {
       return [d.name, d.price];
@@ -87,32 +129,4 @@ d3.json("latest.json").then(function (data) {
     .enter()
     .append("td")
     .text((d) => d);
-  // .selectAll("tr")
-  // .data((d) => d)
-  // .enter()
-  // .append("tr")
-  // .append("th")
-  // .text((d) => d);
-
-  //   let div = d3
-  //     .select("#contents")
-  //     .selectAll("div")
-  //     .data(subject_list)
-  //     .enter()
-  //     .append("div");
-
-  //   div
-  //     .data(subject_list)
-  //     .append("h3")
-  //     .text((d) => d);
-
-  //   div
-  //     .data(object_list)
-  //     .selectAll("p")
-  //     .data((d) => d)
-  //     .enter()
-  //     .append("p")
-  //     .text((d) => {
-  //       return d.name;
-  //     });
 });
