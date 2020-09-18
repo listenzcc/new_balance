@@ -66,6 +66,13 @@ function parse_data(data) {
   return [subject_idx, subject_list, object_list];
 }
 
+// Calculate layout in SVG
+function calculate_layout(subject_idx, subject_list, object_list) {
+  var scale = 1.0;
+
+  return scale;
+}
+
 // Fill #contents div
 d3.json("latest.json").then(function (data) {
   console.log(data);
