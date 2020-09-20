@@ -29,6 +29,7 @@ function thead_onclick(thead) {
 
 // Parse data into D3 useable structure
 function parse_data(data) {
+  // Parse data into D3 useable list
   // Load data
   var _subject = data.科目;
   var _name = data.名称;
@@ -66,11 +67,51 @@ function parse_data(data) {
   return [subject_idx, subject_list, object_list];
 }
 
-// Calculate layout in SVG
-function calculate_layout(subject_idx, subject_list, object_list) {
+// Create SVG
+function create_svg(subject_idx, subject_list, object_list) {
   var scale = 1.0;
+  var height = 500;
+  var width = 500;
+  var background_color = "beige";
 
-  return scale;
+  // Add svg and set its style
+  let svg = d3
+    .select("#svg_container")
+    .append("svg")
+    .attr(
+      "style",
+      "width: " +
+        width +
+        "px;" +
+        "height: " +
+        height +
+        "px;" +
+        "background-color: " +
+        background_color
+    );
+
+  for (var idx in subject_idx) {
+    var xy = random_position(0, width, 0, height, 20);
+    var color = random_color();
+    subject_list[idx].color = color;
+    svg
+      .append("text")
+      .text(subject_list[idx].subject)
+      .attr("x", parseInt(xy[0]))
+      .attr("y", parseInt(xy[1]))
+      .attr("fill", color)
+      .style("text-anchor", "middle");
+  }
+  console.log(subject_list);
+
+  // svg
+  //   .append("circle")
+  //   .attr("cx", "10")
+  //   .attr("cy", "20")
+  //   .attr("r", "40")
+  //   .attr("stroke", "black")
+  //   .attr("stroke-width", "2")
+  //   .attr("fill", "none");
 }
 
 // Fill #contents div
@@ -96,7 +137,7 @@ d3.json("latest.json").then(function (data) {
   // Create a table for each subject
   // in #contents div
   let tables = d3
-    .select("#contents")
+    .select("#contents_container")
     .selectAll("table")
     .data(subject_idx)
     .enter()
@@ -136,4 +177,6 @@ d3.json("latest.json").then(function (data) {
     .enter()
     .append("td")
     .text((d) => d);
+
+  create_svg(subject_idx, subject_list, object_list);
 });
