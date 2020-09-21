@@ -94,15 +94,27 @@ function create_svg(subject_idx, subject_list, object_list) {
     var xy = random_position(0, width, 0, height, 20);
     var color = random_color();
     subject_list[idx].color = color;
-    svg
+
+    subject_list[idx].dom = svg
       .append("text")
       .text(subject_list[idx].subject)
       .attr("x", parseInt(xy[0]))
       .attr("y", parseInt(xy[1]))
       .attr("fill", color)
       .style("text-anchor", "middle");
+
+    for (var i = 0; i < object_list[idx].length; i++) {
+      _xy = random_position(0, width, 0, height, 20);
+      object_list[idx][i].dom = svg
+        .append("text")
+        .text(object_list[idx][i].name)
+        .attr("x", parseInt(_xy[0]))
+        .attr("y", parseInt(_xy[1]))
+        .attr("fill", color)
+        .style("text-anchor", "middle");
+    }
   }
-  console.log(subject_list);
+  console.log("subject_list", subject_list);
 
   // svg
   //   .append("circle")
@@ -116,7 +128,7 @@ function create_svg(subject_idx, subject_list, object_list) {
 
 // Fill #contents div
 d3.json("latest.json").then(function (data) {
-  console.log(data);
+  console.log("data", data);
   // Parse data
   //  subject 1
   //    |-- object 1
@@ -130,9 +142,9 @@ d3.json("latest.json").then(function (data) {
   var subject_idx = parsed[0];
   var subject_list = parsed[1];
   var object_list = parsed[2];
-  console.log(subject_idx);
-  console.log(subject_list);
-  console.log(object_list);
+  console.log("subject_idx", subject_idx);
+  console.log("subject_list", subject_list);
+  console.log("object_list", object_list);
 
   // Create a table for each subject
   // in #contents div
