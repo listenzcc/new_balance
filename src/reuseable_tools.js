@@ -31,10 +31,15 @@ function random_position(xmin, xmax, ymin, ymax, edge) {
   return [x + edge, y + edge];
 }
 
-function random_color() {
+// Formulate random color in range of [vmin, vmax]
+// vmin is not larger than vmax
+// vmin > 0 and vmax < 16
+// The less of vmax - vmin, the smaller range of colors,
+// The less of vmax, the darker of the color
+function random_color(vmin, vmax) {
   var string = "#";
   for (var i = 0; i < 6; i++) {
-    c = parseInt(Math.random() * 16);
+    c = parseInt(Math.random() * (vmax - vmin) + vmin);
     string += c.toString(16);
   }
   return string;

@@ -69,51 +69,97 @@ function parse_data(data) {
 
 // Create SVG
 function create_svg(subject_idx, subject_list, object_list) {
+  // Creat svg and put subjects and objects on it,
+  // in two columns:
+  //  Column 1: Subjects
+  //  Column 2: Objects in each subject
   var scale = 1.0;
   var height = 500;
   var width = 500;
   var background_color = "beige";
 
   // Add svg and set its style
-  let svg = d3
-    .select("#svg_container")
-    .append("svg")
-    .attr(
-      "style",
-      "width: " +
-        width +
-        "px;" +
-        "height: " +
-        height +
-        "px;" +
-        "background-color: " +
-        background_color
-    );
+  let svg = d3.select("#svg_container").append("svg");
 
+  var subject_offset_x = 100;
+  var object_offset_x = 300;
+  var object_y = 20;
+  var object_dy = 20;
+
+  // Place texts
   for (var idx in subject_idx) {
-    var xy = random_position(0, width, 0, height, 20);
-    var color = random_color();
-    subject_list[idx].color = color;
+    var color = random_color(1, 10);
 
-    subject_list[idx].dom = svg
-      .append("text")
-      .text(subject_list[idx].subject)
-      .attr("x", parseInt(xy[0]))
-      .attr("y", parseInt(xy[1]))
-      .attr("fill", color)
-      .style("text-anchor", "middle");
-
+    var y0 = object_y;
     for (var i = 0; i < object_list[idx].length; i++) {
-      _xy = random_position(0, width, 0, height, 20);
+      object_y += object_dy;
       object_list[idx][i].dom = svg
         .append("text")
         .text(object_list[idx][i].name)
-        .attr("x", parseInt(_xy[0]))
-        .attr("y", parseInt(_xy[1]))
+        .attr("x", object_offset_x)
+        .attr("y", object_y)
         .attr("fill", color)
         .style("text-anchor", "middle");
     }
+
+    object_y += object_dy;
+
+    subject_list[idx].color = color;
+    subject_list[idx].dom = svg
+      .append("text")
+      .text(subject_list[idx].subject)
+      .attr("x", subject_offset_x)
+      .attr("y", (y0 + object_y) / 2)
+      .attr("fill", color)
+      .style("text-anchor", "middle");
   }
+
+  // Draw connections
+  for (var j in subject_idx) {
+    for (var k in object_list[j]) {
+      x0 = subject_list[j].dom._groups[0][0].x.baseVal[0].value;
+      y0 = subject_list[j].dom._groups[0][0].y.baseVal[0].value;
+      color = subject_list[j].color;
+      x1 = object_list[j][k].dom._groups[0][0].x.baseVal[0].value;
+      y1 = object_list[j][k].dom._groups[0][0].y.baseVal[0].value;
+      svg
+        .append("path")
+        .attr(
+          "d",
+          "M " +
+            x0 +
+            " " +
+            y0 +
+            " C" +
+            200 +
+            " " +
+            y0 +
+            " " +
+            200 +
+            " " +
+            y1 +
+            " " +
+            x1 +
+            " " +
+            y1
+        )
+        .attr("stroke", color)
+        .attr("fill", "transparent");
+    }
+  }
+
+  svg.attr(
+    "style",
+    "width: " +
+      width +
+      "px;" +
+      "height: " +
+      object_y +
+      "px;" +
+      "background-color: " +
+      background_color
+  );
+
   console.log("subject_list", subject_list);
 
   // svg
