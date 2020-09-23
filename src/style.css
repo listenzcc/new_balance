@@ -11,7 +11,11 @@ table {
   border-collapse: collapse;
 }
 
+td,
 th {
   width: 200px;
+}
+
+th {
   border-bottom: 1px solid;
 }
